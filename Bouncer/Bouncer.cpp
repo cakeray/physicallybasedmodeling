@@ -24,6 +24,7 @@
 void process_input(GLFWwindow* window); 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double x_pos, double y_pos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset);
 
 //  Shape functions
@@ -43,7 +44,9 @@ float last_frame = 0.0;
 Camera camera(glm::vec3(0.0, 0.0, 5.0));
 float last_x = SCREEN_WIDTH / 2.0;
 float last_y = SCREEN_HEIGHT / 2.0;
+bool keys[1024];
 bool first_mouse = true;
+bool mouse_click_active = false;
 
 //  Shaders
 Shader ball;
@@ -69,6 +72,7 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     //  GLAD: Initialization
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -76,20 +80,28 @@ int main() {
         return -1;
     }
 
+    //  Enable depth testing
+    glEnable(GL_DEPTH_TEST);
+
     //  Load Shader
     ball.loadShader("ball.vert", "ball.frag");
 
     //  RENDER LOOP
     while (!glfwWindowShouldClose(window)) {
 
+        // per-frame time logic
+        float current_frame = glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
+
         //  Process input
         process_input(window);
 
         glClearColor(0.2, 0.2, 0.2,1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ball.Use();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(camera.Zoom, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
         ball.setMat4("projection", projection);
         glm::mat4 view = camera.GetViewMatrix();
         ball.setMat4("view", view);
@@ -122,7 +134,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void process_input(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
+    
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(FORWARD, delta_time);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -131,6 +143,8 @@ void process_input(GLFWwindow* window) {
         camera.ProcessKeyboard(LEFT, delta_time);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, delta_time);
+
+
 }
 
 //
@@ -149,7 +163,18 @@ void mouse_callback(GLFWwindow* window, double x_pos, double y_pos) {
     last_x = x_pos;
     last_y = y_pos;
 
-    camera.ProcessMouseMovement(x_offset, y_offset);
+    if(mouse_click_active)
+        camera.ProcessMouseMovement(x_offset, y_offset);
+}
+
+//
+//  Activates mouse when left button is clicked
+//
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        mouse_click_active = true;
+    else
+        mouse_click_active = false;
 }
 
 //
