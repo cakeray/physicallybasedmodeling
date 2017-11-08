@@ -7,18 +7,20 @@
 */
 
 //  OpenGL headers
-#include<glad/glad.h>
-#include<glfw/glfw3.h>
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
 
 //  GLM
-#include<glm/glm.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 //  C++ headers
-#include<iostream>
+#include <iostream>
 
 //  Custon headers
 #include "Camera.h"
 #include "Shader.h"
+#include "Texture.h"
 
 //  Callback function definitions
 void process_input(GLFWwindow* window); 
@@ -30,8 +32,9 @@ void scroll_callback(GLFWwindow* window, double x_offset, double y_offset);
 //  Shape functions
 void render_sphere();
 
+//
 //  Global variables
-
+//
 //  Screen
 const unsigned int SCREEN_WIDTH = 1280;
 const unsigned int SCREEN_HEIGHT = 720;
@@ -50,6 +53,9 @@ bool mouse_click_active = false;
 
 //  Shaders
 Shader ball;
+
+//  Textures
+Texture ballTex;
 
 int main() {
 
@@ -85,6 +91,7 @@ int main() {
 
     //  Load Shader
     ball.loadShader("ball.vert", "ball.frag");
+    ballTex.loadTexture("images/rock.jpg", "ballTex");
 
     //  RENDER LOOP
     while (!glfwWindowShouldClose(window)) {
@@ -100,15 +107,24 @@ int main() {
         glClearColor(0.2, 0.2, 0.2,1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        //  projection and view matrix set
         ball.Use();
         glm::mat4 projection = glm::perspective(camera.Zoom, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
         ball.setMat4("projection", projection);
         glm::mat4 view = camera.GetViewMatrix();
         ball.setMat4("view", view);
+
+        //  bind textures
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, ballTex.getTextureID());
+
+        //  model matrix set
         glm::mat4 model;
-        model = glm::scale(model, glm::vec3(1.0f));
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0, 1.0, 0.0));
+        model = glm::scale(model, glm::vec3(0.1f));
         ball.setMat4("model", model);
         render_sphere();
+
 
         //  Swap buffers and poll IO events
         glfwSwapBuffers(window);
@@ -143,8 +159,6 @@ void process_input(GLFWwindow* window) {
         camera.ProcessKeyboard(LEFT, delta_time);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, delta_time);
-
-
 }
 
 //
