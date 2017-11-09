@@ -44,7 +44,7 @@ float delta_time = 0.0;
 float last_frame = 0.0;
 
 //  Camera
-Camera camera(glm::vec3(0.0, 0.0, 5.0));
+Camera camera(glm::vec3(0.0, 2.0, 10.0));
 float last_x = SCREEN_WIDTH / 2.0;
 float last_y = SCREEN_HEIGHT / 2.0;
 bool keys[1024];
@@ -93,6 +93,7 @@ int main() {
     ball.loadShader("ball.vert", "ball.frag");
     ballTex.loadTexture("images/rock.jpg", "ballTex");
 
+
     //  RENDER LOOP
     while (!glfwWindowShouldClose(window)) {
 
@@ -120,11 +121,11 @@ int main() {
 
         //  model matrix set
         glm::mat4 model;
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0, 1.0, 0.0));
-        model = glm::scale(model, glm::vec3(0.1f));
+        //model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+        model = glm::scale(model, glm::vec3(1.0f));
         ball.setMat4("model", model);
         render_sphere();
-
+        
 
         //  Swap buffers and poll IO events
         glfwSwapBuffers(window);
