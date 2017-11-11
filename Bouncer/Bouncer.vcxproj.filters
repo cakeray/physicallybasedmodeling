@@ -40,5 +40,11 @@
     <None Include="ball.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="box.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="box.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
