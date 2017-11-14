@@ -33,6 +33,9 @@ void scroll_callback(GLFWwindow* window, double x_offset, double y_offset);
 void render_sphere();
 void render_box();
 
+//  Force functions
+glm::vec3 add_gravity();
+
 //
 //  Global variables
 //
@@ -45,6 +48,8 @@ GLuint sphereVAO = 0;
 GLuint indexCount;
 unsigned int cubeVBO, cubeVAO;
 
+//  Ball variables
+glm::vec3 ball_position(0.0, 0.0, 0.0);
 
 //  Time
 float delta_time = 0.0;
@@ -121,26 +126,32 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //  projection and view matrix set
-        ball.Use();
         glm::mat4 projection = glm::perspective(camera.Zoom, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-        ball.setMat4("projection", projection);
         glm::mat4 view = camera.GetViewMatrix();
-        ball.setMat4("view", view);
-        glm::mat4 model;
-        ball.setMat4("model", model);
-        render_sphere();
 
+        //  set ball shader
+        ball.Use();
+        ball.setMat4("projection", projection);
+        ball.setMat4("view", view);
+        glm::mat4 ball_model;
+        ball_model = glm::translate(ball_model, ball_position);
+        ball_model = glm::scale(ball_model, glm::vec3(0.25f));
+        ball.setMat4("model", ball_model);
+        //  render sphere
+        render_sphere();
+        ball_position += add_gravity() * glm::vec3(0.001);
+
+        //  set box shader
         box.Use();
+        glm::mat4 box_model;
         box.setMat4("projection", projection);
         box.setMat4("view", view);
         //  model matrix set
-        model = glm::scale(model, glm::vec3(5.0f));
-        box.setMat4("model", model);
-
+        box_model = glm::scale(box_model, glm::vec3(8.0f));
+        box.setMat4("model", box_model);
         //  bind textures
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, box_tex.getTextureID());
-        
         // render the cube
         render_box();
 
@@ -379,4 +390,12 @@ void render_box() {
     //  render the box
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+
+//
+//  Add gravity - default is (0.0,-9.8,0.0)
+//
+glm::vec3 add_gravity() {
+    return glm::vec3(0.0, -9.8, 0.0);
 }
