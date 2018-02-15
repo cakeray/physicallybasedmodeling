@@ -2,7 +2,7 @@
 
 #include "Texture.h"
 
-GLuint Texture::loadTexture(GLchar* path, std::string name)
+GLuint Texture::LoadTexture(GLchar* path, std::string name)
 {
     this->m_name = name;
     // Generate texture ID and load texture data 
@@ -25,7 +25,7 @@ GLuint Texture::loadTexture(GLchar* path, std::string name)
     return this->m_texID;
 }
 
-GLuint Texture::loadHDR(GLchar* path, std::string name)
+GLuint Texture::LoadHDR(GLchar* path, std::string name)
 {
     this->m_name = name;
     this->m_texType = GL_TEXTURE_2D;
@@ -83,7 +83,7 @@ GLuint Texture::loadHDR(GLchar* path, std::string name)
     return this->m_texID;
 }
 
-GLuint Texture::getTextureID()
+GLuint Texture::GetTextureID()
 {
     return this->m_texID;
 }

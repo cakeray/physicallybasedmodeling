@@ -27,9 +27,9 @@ public:
         glDeleteTextures(1, &this->m_texID);
     }
     
-    GLuint loadTexture(GLchar* path, std::string name);
-    GLuint loadHDR(GLchar* path, std::string name);
-    GLuint getTextureID();
+    GLuint LoadTexture(GLchar* path, std::string name);
+    GLuint LoadHDR(GLchar* path, std::string name);
+    GLuint GetTextureID();
 };
 
 
