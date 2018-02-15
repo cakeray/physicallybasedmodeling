@@ -1,8 +1,6 @@
 //  Contains the callback functions
 
 #include "Functions.h"
-#include "Globals.h"
-#include "Camera.h"
 
 //
 //  Whenever the window size is changed (automatically by OS, or manually by user) this function is called
