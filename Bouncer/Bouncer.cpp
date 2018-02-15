@@ -21,6 +21,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Simulation.h"
 
 
 //  Callback function definitions
@@ -34,10 +35,6 @@ void ScrollCallback(GLFWwindow* window, double x_offSet, double y_offSet);
 void RenderSphere();
 void RenderBox();
 
-//  Simulation functions
-glm::vec3 AddForces(bool gravity, bool wind);
-glm::vec3 AddGravity();
-glm::vec3 AddWind();
 
 //  Screen
 const unsigned int SCREEN_WIDTH = 1280;
@@ -110,6 +107,7 @@ int main() {
     
     boxTex.LoadTexture("images/checkerboard.jpg", "boxTex");
 
+    //StartSimulation(ballPosition);
 
     //  RENDER LOOP
     while (!glfwWindowShouldClose(window)) {
@@ -139,10 +137,8 @@ int main() {
         ball.SetMat4("model", ballModel);
         //  render sphere
         RenderSphere();
-        bool gravityOn = true;
-        bool windOn = true;
-        float ballMass = 2.0f;
-        ballPosition += AddForces(gravityOn, windOn);
+        //  perform simulation to obtain new position
+        ballPosition += UpdatePosition(ballPosition);
 
         //  Set box shader
         box.Use();
@@ -394,33 +390,4 @@ void RenderBox() {
     //  render the box
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-}
-
-
-//
-//  Add all the Forces
-//
-glm::vec3 AddForces(bool gravity, bool wind) {
-    glm::vec3 windForce(5.0, 10.0, 0.0);
-    glm::vec3 gravityForce(0.0, -9.8, 0.0);
-    if (!wind) {
-        windForce = glm::vec3(0.0, 0.0, 0.0);
-    }
-    if (!gravity) {
-        gravityForce = glm::vec3(0.0, 0.0, 0.0);
-    }
-    glm::vec3 result = gravityForce + windForce;
-    return result * 0.0009f;
-}
-//
-//  Add gravity - default is (0.0,-9.8,0.0)
-//
-glm::vec3 AddGravity() {
-    return glm::vec3(0.0, -9.8, 0.0);
-}
-//
-//  Add wind
-//
-glm::vec3 AddWind() {
-    return glm::vec3(5.0, 0.0, 0.0);
 }

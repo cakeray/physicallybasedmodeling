@@ -120,11 +120,13 @@
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="Bouncer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Simulation.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
