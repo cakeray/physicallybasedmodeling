@@ -119,9 +119,15 @@
   <ItemGroup>
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="Bouncer.cpp" />
+    <ClCompile Include="Callback.cpp" />
+    <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Simulation.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
