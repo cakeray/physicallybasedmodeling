@@ -24,19 +24,20 @@
 
 
 //  Callback function definitions
-void process_input(GLFWwindow* window);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double x_pos, double y_pos);
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-void scroll_callback(GLFWwindow* window, double x_offset, double y_offset);
+void ProcessInput(GLFWwindow* window);
+void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
+void MouseCallback(GLFWwindow* window, double x_pos, double y_pos);
+void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void ScrollCallback(GLFWwindow* window, double x_offSet, double y_offSet);
 
 //  Shape functions
-void render_sphere();
-void render_box();
+void RenderSphere();
+void RenderBox();
 
 //  Simulation functions
-glm::vec3 add_gravity();
-
+glm::vec3 AddForces(bool gravity, bool wind);
+glm::vec3 AddGravity();
+glm::vec3 AddWind();
 
 //  Screen
 const unsigned int SCREEN_WIDTH = 1280;
@@ -48,26 +49,26 @@ GLuint indexCount;
 unsigned int cubeVBO, cubeVAO;
 
 //  Ball variables
-glm::vec3 ball_position(0.0, 0.0, 0.0);
+glm::vec3 ballPosition(0.0, 0.0, 0.0);
 
 //  Time
-float delta_time = 0.0;
-float last_frame = 0.0;
+float deltaTime = 0.0;
+float lastFrame = 0.0;
 
 //  Camera
 Camera camera(glm::vec3(0.0, 1.0, 15.0));
-float last_x = SCREEN_WIDTH / 2.0;
-float last_y = SCREEN_HEIGHT / 2.0;
+float lastX = SCREEN_WIDTH / 2.0;
+float lastY = SCREEN_HEIGHT / 2.0;
 bool keys[1024];
-bool first_mouse = true;
-bool mouse_click_active = false;
+bool firstMouse = true;
+bool mouseClickActive = false;
 
 //  Shaders
 Shader ball;
 Shader box;
 
 //  Textures
-Texture box_tex;
+Texture boxTex;
 
 int main() {
 
@@ -87,10 +88,10 @@ int main() {
     glfwMakeContextCurrent(window);
 
     //  Set callback functions
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
+    glfwSetCursorPosCallback(window, MouseCallback);
+    glfwSetScrollCallback(window, ScrollCallback);
+    glfwSetMouseButtonCallback(window, MouseButtonCallback);
 
     //  GLAD: Initialization
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -104,55 +105,58 @@ int main() {
     glCullFace(GL_FRONT);
 
     //  Load Shader
-    ball.loadShader("ball.vert", "ball.frag");
-    box.loadShader("box.vert", "box.frag");
+    ball.LoadShader("ball.vert", "ball.frag");
+    box.LoadShader("box.vert", "box.frag");
     
-    box_tex.loadTexture("images/checkerboard.jpg", "box_tex");
+    boxTex.LoadTexture("images/checkerboard.jpg", "boxTex");
 
 
     //  RENDER LOOP
     while (!glfwWindowShouldClose(window)) {
 
         // per-frame time logic
-        float current_frame = glfwGetTime();
-        delta_time = current_frame - last_frame;
-        last_frame = current_frame;
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
         //  Process input
-        process_input(window);
+        ProcessInput(window);
 
         glClearColor(0.2, 0.2, 0.2,1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //  projection and view matrix set
+        //  projection and view matrix Set
         glm::mat4 projection = glm::perspective(camera.Zoom, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
 
-        //  set ball shader
+        //  Set ball shader
         ball.Use();
-        ball.setMat4("projection", projection);
-        ball.setMat4("view", view);
-        glm::mat4 ball_model;
-        ball_model = glm::translate(ball_model, ball_position);
-        ball_model = glm::scale(ball_model, glm::vec3(0.25f));
-        ball.setMat4("model", ball_model);
+        ball.SetMat4("projection", projection);
+        ball.SetMat4("view", view);
+        glm::mat4 ballModel;
+        ballModel = glm::translate(ballModel, ballPosition);
+        ballModel = glm::scale(ballModel, glm::vec3(0.25f));
+        ball.SetMat4("model", ballModel);
         //  render sphere
-        render_sphere();
-        ball_position += add_gravity();
+        RenderSphere();
+        bool gravityOn = true;
+        bool windOn = true;
+        float ballMass = 2.0f;
+        ballPosition += AddForces(gravityOn, windOn);
 
-        //  set box shader
+        //  Set box shader
         box.Use();
-        glm::mat4 box_model;
-        box.setMat4("projection", projection);
-        box.setMat4("view", view);
-        //  model matrix set
-        box_model = glm::scale(box_model, glm::vec3(8.0f));
-        box.setMat4("model", box_model);
+        glm::mat4 boxModel;
+        box.SetMat4("projection", projection);
+        box.SetMat4("view", view);
+        //  model matrix Set
+        boxModel = glm::scale(boxModel, glm::vec3(8.0f));
+        box.SetMat4("model", boxModel);
         //  bind textures
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, box_tex.getTextureID());
+        glBindTexture(GL_TEXTURE_2D, boxTex.GetTextureID());
         // render the cube
-        render_box();
+        RenderBox();
 
         //  Swap buffers and poll IO events
         glfwSwapBuffers(window);
@@ -167,7 +171,7 @@ int main() {
 //
 //  Whenever the window size is changed (automatically by OS, or manually by user) this function is called
 //
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
@@ -175,62 +179,62 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 //  Processes all input
 //  When input keys are pressed or camera is moved, this function reacts acccordingly
 //
-void process_input(GLFWwindow* window) {
+void ProcessInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, delta_time);
+        camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, delta_time);
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, delta_time);
+        camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, delta_time);
+        camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 //
 //  Whenever the mouse moves, this function is called  
 //
-void mouse_callback(GLFWwindow* window, double x_pos, double y_pos) {
-    if (first_mouse) {
-        last_x = x_pos;
-        last_y = y_pos;
-        first_mouse = false;
+void MouseCallback(GLFWwindow* window, double x_pos, double y_pos) {
+    if (firstMouse) {
+        lastX = x_pos;
+        lastY = y_pos;
+        firstMouse = false;
     }
 
-    float x_offset = x_pos - last_x;
-    float y_offset = last_y - y_pos;
+    float x_offSet = x_pos - lastX;
+    float y_offSet = lastY - y_pos;
 
-    last_x = x_pos;
-    last_y = y_pos;
+    lastX = x_pos;
+    lastY = y_pos;
 
-    if (mouse_click_active)
-        camera.ProcessMouseMovement(x_offset, y_offset);
+    if (mouseClickActive)
+        camera.ProcessMouseMovement(x_offSet, y_offSet);
 }
 
 //
 //  Activates mouse when left button is clicked
 //
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        mouse_click_active = true;
+        mouseClickActive = true;
     else
-        mouse_click_active = false;
+        mouseClickActive = false;
 }
 
 //
 //  Whenever mouse scroll wheel is used, this function is called
 //
-void scroll_callback(GLFWwindow* window, double x_offset, double y_offset) {
-    camera.ProcessMouseScroll(y_offset);
+void ScrollCallback(GLFWwindow* window, double x_offSet, double y_offSet) {
+    camera.ProcessMouseScroll(y_offSet);
 }
 
 
 //
 //  Renders a sphere
 //
-void render_sphere()
+void RenderSphere()
 {
     if (sphereVAO == 0)
     {
@@ -326,7 +330,7 @@ void render_sphere()
 //
 //  renders the box
 //
-void render_box() {
+void RenderBox() {
     float box_vertices[] = {
         // Back face
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-left
@@ -392,9 +396,31 @@ void render_box() {
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
+
+//
+//  Add all the Forces
+//
+glm::vec3 AddForces(bool gravity, bool wind) {
+    glm::vec3 windForce(5.0, 10.0, 0.0);
+    glm::vec3 gravityForce(0.0, -9.8, 0.0);
+    if (!wind) {
+        windForce = glm::vec3(0.0, 0.0, 0.0);
+    }
+    if (!gravity) {
+        gravityForce = glm::vec3(0.0, 0.0, 0.0);
+    }
+    glm::vec3 result = gravityForce + windForce;
+    return result * 0.0009f;
+}
 //
 //  Add gravity - default is (0.0,-9.8,0.0)
 //
-glm::vec3 add_gravity() {
-    return glm::vec3(0.0, -9.8, 0.0) * 0.0009f;
+glm::vec3 AddGravity() {
+    return glm::vec3(0.0, -9.8, 0.0);
+}
+//
+//  Add wind
+//
+glm::vec3 AddWind() {
+    return glm::vec3(5.0, 0.0, 0.0);
 }

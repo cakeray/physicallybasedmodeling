@@ -119,6 +119,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="Bouncer.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
