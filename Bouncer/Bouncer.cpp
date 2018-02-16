@@ -46,14 +46,14 @@ GLuint indexCount;
 unsigned int cubeVBO, cubeVAO;
 
 //  Ball variables
-glm::vec3 ballPosition(0.0, 0.0, 0.0);
+glm::vec3 ballPosition(0.0, 0.0, 0.0);      //  Specifies the initial position
 
 //  Time
 float deltaTime = 0.0;
 float lastFrame = 0.0;
 
 //  Camera
-Camera camera(glm::vec3(0.0, 1.0, 15.0));
+Camera camera(glm::vec3(0.0, 0.0, 50.0));   //  Specifies the initial position
 float lastX = SCREEN_WIDTH / 2.0;
 float lastY = SCREEN_HEIGHT / 2.0;
 bool keys[1024];
@@ -105,9 +105,9 @@ int main() {
     ball.LoadShader("ball.vert", "ball.frag");
     box.LoadShader("box.vert", "box.frag");
     
-    boxTex.LoadTexture("images/checkerboard.jpg", "boxTex");
+    boxTex.LoadTexture("images/tiles.jpg", "boxTex");
 
-    //StartSimulation(ballPosition);
+    StartSimulation(ballPosition);
 
     //  RENDER LOOP
     while (!glfwWindowShouldClose(window)) {
@@ -120,7 +120,7 @@ int main() {
         //  Process input
         ProcessInput(window);
 
-        glClearColor(0.2, 0.2, 0.2,1.0);
+        glClearColor(0.2, 0.2, 0.2, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //  projection and view matrix Set
@@ -133,7 +133,7 @@ int main() {
         ball.SetMat4("view", view);
         glm::mat4 ballModel;
         ballModel = glm::translate(ballModel, ballPosition);
-        ballModel = glm::scale(ballModel, glm::vec3(0.25f));
+        ballModel = glm::scale(ballModel, glm::vec3(1.0f));
         ball.SetMat4("model", ballModel);
         //  render sphere
         RenderSphere();
@@ -146,7 +146,7 @@ int main() {
         box.SetMat4("projection", projection);
         box.SetMat4("view", view);
         //  model matrix Set
-        boxModel = glm::scale(boxModel, glm::vec3(8.0f));
+        boxModel = glm::scale(boxModel, glm::vec3(14.5f));
         box.SetMat4("model", boxModel);
         //  bind textures
         glActiveTexture(GL_TEXTURE0);
@@ -329,47 +329,47 @@ void RenderSphere()
 void RenderBox() {
     float box_vertices[] = {
         // Back face
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-left
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right         
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+        -1.0f, -1.0f, -1.0f,  0.0f, 0.0f, // Bottom-left
+        1.0f,  1.0f, -1.0f,  1.0f, 1.0f, // top-right
+        1.0f, -1.0f, -1.0f,  1.0f, 0.0f, // bottom-right         
+        1.0f,  1.0f, -1.0f,  1.0f, 1.0f, // top-right
+        -1.0f, -1.0f, -1.0f,  0.0f, 0.0f, // bottom-left
+        -1.0f,  1.0f, -1.0f,  0.0f, 1.0f, // top-left
                                           // Front face
-                                          -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
-                                          0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-                                          0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
-                                          0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
-                                          -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left
-                                          -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left                                 
+                                          -1.0f, -1.0f,  1.0f,  0.0f, 0.0f, // bottom-left
+                                          1.0f, -1.0f,  1.0f,  1.0f, 0.0f, // bottom-right
+                                          1.0f,  1.0f,  1.0f,  1.0f, 1.0f, // top-right
+                                          1.0f,  1.0f,  1.0f,  1.0f, 1.0f, // top-right
+                                          -1.0f,  1.0f,  1.0f,  0.0f, 1.0f, // top-left
+                                          -1.0f, -1.0f,  1.0f,  0.0f, 0.0f, // bottom-left                                 
                                                                             // Left face                                                                    
-                                                                            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right                                                                    
-                                                                            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left
-                                                                            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
-                                                                            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
-                                                                            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-                                                                            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+                                                                            -1.0f,  1.0f,  1.0f,  1.0f, 0.0f, // top-right                                                                    
+                                                                            -1.0f,  1.0f, -1.0f,  1.0f, 1.0f, // top-left
+                                                                            -1.0f, -1.0f, -1.0f,  0.0f, 1.0f, // bottom-left
+                                                                            -1.0f, -1.0f, -1.0f,  0.0f, 1.0f, // bottom-left
+                                                                            -1.0f, -1.0f,  1.0f,  0.0f, 0.0f, // bottom-right
+                                                                            -1.0f,  1.0f,  1.0f,  1.0f, 0.0f, // top-right
                                                                                                               // Right face
-                                                                                                              0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-                                                                                                              0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
-                                                                                                              0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right         
-                                                                                                              0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
-                                                                                                              0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-                                                                                                              0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left     
+                                                                                                              1.0f,  1.0f,  1.0f,  1.0f, 0.0f, // top-left
+                                                                                                              1.0f, -1.0f, -1.0f,  0.0f, 1.0f, // bottom-right
+                                                                                                              1.0f,  1.0f, -1.0f,  1.0f, 1.0f, // top-right         
+                                                                                                              1.0f, -1.0f, -1.0f,  0.0f, 1.0f, // bottom-right
+                                                                                                              1.0f,  1.0f,  1.0f,  1.0f, 0.0f, // top-left
+                                                                                                              1.0f, -1.0f,  1.0f,  0.0f, 0.0f, // bottom-left     
                                                                                                                                                // Bottom face
-                                                                                                                                               -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
-                                                                                                                                               0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left
-                                                                                                                                               0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
-                                                                                                                                               0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
-                                                                                                                                               -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-                                                                                                                                               -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+                                                                                                                                               -1.0f, -1.0f, -1.0f,  0.0f, 1.0f, // top-right
+                                                                                                                                               1.0f, -1.0f, -1.0f,  1.0f, 1.0f, // top-left
+                                                                                                                                               1.0f, -1.0f,  1.0f,  1.0f, 0.0f, // bottom-left
+                                                                                                                                               1.0f, -1.0f,  1.0f,  1.0f, 0.0f, // bottom-left
+                                                                                                                                               -1.0f, -1.0f,  1.0f,  0.0f, 0.0f, // bottom-right
+                                                                                                                                               -1.0f, -1.0f, -1.0f,  0.0f, 1.0f, // top-right
                                                                                                                                                                                  // Top face
-                                                                                                                                                                                 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-                                                                                                                                                                                 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-                                                                                                                                                                                 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right     
-                                                                                                                                                                                 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-                                                                                                                                                                                 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-                                                                                                                                                                                 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f  // bottom-left                                                                   
+                                                                                                                                                                                 -1.0f,  1.0f, -1.0f,  0.0f, 1.0f, // top-left
+                                                                                                                                                                                 1.0f,  1.0f,  1.0f,  1.0f, 0.0f, // bottom-right
+                                                                                                                                                                                 1.0f,  1.0f, -1.0f,  1.0f, 1.0f, // top-right     
+                                                                                                                                                                                 1.0f,  1.0f,  1.0f,  1.0f, 0.0f, // bottom-right
+                                                                                                                                                                                 -1.0f,  1.0f, -1.0f,  0.0f, 1.0f, // top-left
+                                                                                                                                                                                 -1.0f,  1.0f,  1.0f,  0.0f, 0.0f  // bottom-left                                                                   
     };
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &cubeVBO);
