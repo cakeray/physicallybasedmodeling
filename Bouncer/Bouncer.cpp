@@ -109,10 +109,18 @@ int main() {
 
     StartSimulation(ballPosition);
 
+    float h = 0.01f;                                            //  timestep
+    float fraction = 1.0f;                                      //  fraction
+    glm::vec3 velocity = glm::vec3(-75.0f, 10.8f, 0.0f);          //  starting velocity
+    const glm::vec3 gravity = glm::vec3(0.0f, -9.8f, 0.0f);     //  constant gravity
+    const float mass = 1.0f;                                    //  mass of ball
+    float airResistanceConstant = 0.5f;                         //  constant for air resistance
+    glm::vec3 windVelocity = glm::vec3(0.0f, 0.0f, 0.0f);      //  wind velocity
+
     //  RENDER LOOP
     while (!glfwWindowShouldClose(window)) {
 
-        // per-frame time logic
+        //  per-frame time logic
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -131,14 +139,43 @@ int main() {
         ball.Use();
         ball.SetMat4("projection", projection);
         ball.SetMat4("view", view);
+
         glm::mat4 ballModel;
         ballModel = glm::translate(ballModel, ballPosition);
         ballModel = glm::scale(ballModel, glm::vec3(1.0f));
         ball.SetMat4("model", ballModel);
         //  render sphere
         RenderSphere();
-        //  perform simulation to obtain new position
-        ballPosition += UpdatePosition(ballPosition);
+        //ballPosition = UpdatePosition(ballPosition);
+        
+        //  Calculating acceleration taking into account gravity and air resistance
+        glm::vec3 acceleration = gravity + (airResistanceConstant / mass) * (windVelocity - velocity);
+        //  Euler simulation
+        glm::vec3 newVelocity = velocity + acceleration*h;
+        glm::vec3 newPosition = ballPosition + h*((newVelocity + velocity) / 2.0f);
+
+        //std::cout << newPosition.x << " " << newPosition.y << " " << newPosition.z << std::endl;
+        if (CollisionCheck(newPosition)) {
+            //std::cout << "Collision occured" << std::endl;
+            float dCurrent = FindDistance(ballPosition);
+            float dNext = FindDistance(newPosition);
+
+            fraction = dCurrent / (dCurrent - dNext);
+            //h = fraction * h;
+            //std::cout << h << std::endl;
+
+            velocity = CollisionResponse(newVelocity);
+            ballPosition = ballPosition;
+        }
+        else {
+            //  Updating velocity and position for next frame
+            velocity = newVelocity;
+            ballPosition = newPosition;
+
+            //  Resetting timestep
+            //h = h / fraction;
+        }
+
 
         //  Set box shader
         box.Use();
@@ -164,17 +201,17 @@ int main() {
     return 0;
 }
 
-//
-//  Whenever the window size is changed (automatically by OS, or manually by user) this function is called
-//
+/*
+    Whenever the window size is changed (automatically by OS, or manually by user) this function is called
+*/
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-//
-//  Processes all input
-//  When input keys are pressed or camera is moved, this function reacts acccordingly
-//
+/*
+    Processes all input
+    When input keys are pressed or camera is moved, this function reacts acccordingly
+*/
 void ProcessInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -189,9 +226,9 @@ void ProcessInput(GLFWwindow* window) {
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-//
-//  Whenever the mouse moves, this function is called  
-//
+/*
+    Whenever the mouse moves, this function is called  
+*/
 void MouseCallback(GLFWwindow* window, double x_pos, double y_pos) {
     if (firstMouse) {
         lastX = x_pos;
@@ -209,9 +246,9 @@ void MouseCallback(GLFWwindow* window, double x_pos, double y_pos) {
         camera.ProcessMouseMovement(x_offSet, y_offSet);
 }
 
-//
-//  Activates mouse when left button is clicked
-//
+/*
+    Activates mouse when left button is clicked
+*/
 void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
         mouseClickActive = true;
@@ -219,17 +256,17 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         mouseClickActive = false;
 }
 
-//
-//  Whenever mouse scroll wheel is used, this function is called
-//
+/*
+    Whenever mouse scroll wheel is used, this function is called
+*/
 void ScrollCallback(GLFWwindow* window, double x_offSet, double y_offSet) {
     camera.ProcessMouseScroll(y_offSet);
 }
 
 
-//
-//  Renders a sphere
-//
+/*
+    Renders a sphere
+*/
 void RenderSphere()
 {
     if (sphereVAO == 0)
@@ -323,9 +360,9 @@ void RenderSphere()
     glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
 }
 
-//
-//  renders the box
-//
+/*
+    Renders the box
+*/
 void RenderBox() {
     float box_vertices[] = {
         // Back face
