@@ -39,12 +39,12 @@ void ConfigurePlanes() {
     planePositions[5] = glm::vec3(0.0, 0.0, -15.0f);
 
     glm::vec3 negative(-1.0);
-    planeNormals[0] = glm::normalize(planePositions[0] * negative) ;
-    planeNormals[1] = glm::normalize(planePositions[1] * negative) ;
-    planeNormals[2] = glm::normalize(planePositions[2] * negative) ;
-    planeNormals[3] = glm::normalize(planePositions[3] * negative) ;
-    planeNormals[4] = glm::normalize(planePositions[4] * negative) ;
-    planeNormals[5] = glm::normalize(planePositions[5] * negative) ;
+    planeNormals[0] = glm::normalize(planePositions[0]) * negative;
+    planeNormals[1] = glm::normalize(planePositions[1]) * negative;
+    planeNormals[2] = glm::normalize(planePositions[2]) * negative;
+    planeNormals[3] = glm::normalize(planePositions[3]) * negative;
+    planeNormals[4] = glm::normalize(planePositions[4]) * negative;
+    planeNormals[5] = glm::normalize(planePositions[5]) * negative;
 }
 
 /*
@@ -137,19 +137,28 @@ float FindDistance(glm::vec3 position) {
 
 glm::vec3 CollisionResponse(glm::vec3 velocity) {
     int planeIndex = 0;
-    float coe = 1.0f;       //  Coefficient of Elasticity
-    float cof = 0.1f;       //  Coefficient of Friction
+    float coe = 0.95f;       //  Coefficient of Elasticity
+    float cof = 0.85f;       //  Coefficient of Friction
     
     //  Find the right plane where collision takes place
     for (int i = 0; i < collisionPlane.size(); i++) {
-        if (collisionPlane[i])
+        if (collisionPlane[i]) {
             planeIndex = i;
+            break;
+        }
     }
     glm::vec3 normal = planeNormals[planeIndex];
-
+    /*
+    std::cout << "Collision Response" << std::endl;
+    std::cout << "Plane: " << planePositions[planeIndex].x << " " << planePositions[planeIndex].y << " " << planePositions[planeIndex].z << std::endl;
+    std::cout << "Plane: " << planeNormals[planeIndex].x << " " << planeNormals[planeIndex].y << " " << planeNormals[planeIndex].z << std::endl;
+    std::cout << "CR IV: " << velocity.x << " " << velocity.y << " " << velocity.z << std::endl;
+    */
     //  Calculate normal and tangential velocity
     glm::vec3 normalVelocity = dot(velocity, normal) * normal;
+    //std::cout << "normal V: " << normalVelocity.x << " " << normalVelocity.y << " " << normalVelocity.z << std::endl;
     glm::vec3 tangentVelocity = velocity - normalVelocity;
+    //std::cout << "tangent V: " << tangentVelocity.x << " " << tangentVelocity.y << " " << tangentVelocity.z << std::endl;
 
     //  Calculate elastic and frictional veclocities
     glm::vec3 elasticVelocity = -1.0f * coe * normalVelocity;
@@ -157,6 +166,10 @@ glm::vec3 CollisionResponse(glm::vec3 velocity) {
 
     //  Calculate new velocity
     glm::vec3 newVelocity = elasticVelocity + frictionVelocity;
+
+    //std::cout << "Out V: " << newVelocity.x<<" "<<newVelocity.y<<" "<<newVelocity.z << std::endl;
+
+    collisionPlane[planeIndex] = false;
 
     return newVelocity;
 }
