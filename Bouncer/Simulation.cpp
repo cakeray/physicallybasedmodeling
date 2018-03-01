@@ -137,8 +137,8 @@ float FindDistance(glm::vec3 position) {
 
 glm::vec3 CollisionResponse(glm::vec3 velocity) {
     int planeIndex = 0;
-    float coe = 0.95f;       //  Coefficient of Elasticity
-    float cof = 0.85f;       //  Coefficient of Friction
+    float coe = 1.0f;       //  Coefficient of Elasticity
+    float cof = 0.1f;       //  Coefficient of Friction
     
     //  Find the right plane where collision takes place
     for (int i = 0; i < collisionPlane.size(); i++) {

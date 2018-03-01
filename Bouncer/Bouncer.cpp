@@ -111,11 +111,11 @@ int main() {
 
     float h = 0.01f;                                            //  timestep
     float fraction = 1.0f;                                      //  fraction
-    glm::vec3 velocity = glm::vec3(-30.0f, 20.8f, 0.0f);          //  starting velocity
+    glm::vec3 velocity = glm::vec3(30.0f, 10.8f, 80.0f);        //  starting velocity
     const glm::vec3 gravity = glm::vec3(0.0f, -9.8f, 0.0f);     //  constant gravity
     const float mass = 1.0f;                                    //  mass of ball
     float airResistanceConstant = 0.5f;                         //  constant for air resistance
-    glm::vec3 windVelocity = glm::vec3(0.0f, 0.0f, 0.0f);      //  wind velocity
+    glm::vec3 windVelocity = glm::vec3(0.0f, 0.0f, 0.0f);       //  wind velocity
 
     //  RENDER LOOP
     while (!glfwWindowShouldClose(window)) {
@@ -149,7 +149,7 @@ int main() {
         //ballPosition = UpdatePosition(ballPosition);
         
         //  Calculating acceleration taking into account gravity and air resistance
-        //glm::vec3 acceleration = gravity + (airResistanceConstant / mass) * (velocity);
+        //glm::vec3 acceleration = gravity + (airResistanceConstant / mass) * (windVelocity - velocity);
         glm::vec3 acceleration = gravity;
         //std::cout << "Acceleration: "<<acceleration.x << " " << acceleration.y << " " << acceleration.z << std::endl;
         //  Euler simulation
