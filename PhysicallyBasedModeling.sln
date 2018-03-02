@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bouncer", "Bouncer\Bouncer.vcxproj", "{841D42AF-0945-4DBD-ADCC-738A13D4BD83}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Particles", "Particles\Particles.vcxproj", "{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{841D42AF-0945-4DBD-ADCC-738A13D4BD83}.Release|x64.Build.0 = Release|x64
 		{841D42AF-0945-4DBD-ADCC-738A13D4BD83}.Release|x86.ActiveCfg = Release|Win32
 		{841D42AF-0945-4DBD-ADCC-738A13D4BD83}.Release|x86.Build.0 = Release|Win32
+		{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}.Debug|x64.ActiveCfg = Debug|x64
+		{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}.Debug|x64.Build.0 = Debug|x64
+		{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}.Debug|x86.ActiveCfg = Debug|Win32
+		{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}.Debug|x86.Build.0 = Debug|Win32
+		{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}.Release|x64.ActiveCfg = Release|x64
+		{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}.Release|x64.Build.0 = Release|x64
+		{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}.Release|x86.ActiveCfg = Release|Win32
+		{F6D46991-FBB9-4BA1-A8A4-848798AF05A3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
