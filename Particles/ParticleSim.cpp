@@ -21,7 +21,7 @@ C++, OpenGL, GLSL
 #include "Camera.h"
 #include "Shader.h"
 #include "Texture.h"
-
+#include "ParticleEmitter.h"
 
 //  Callback function definitions
 void ProcessInput(GLFWwindow* window);
@@ -39,13 +39,12 @@ float deltaTime = 0.0;
 float lastFrame = 0.0;
 
 //  Camera
-Camera camera(glm::vec3(0.0, 0.0, 50.0));   //  Specifies the initial position
+Camera camera(glm::vec3(0.0f, 0.0f, 50.0f));   //  Specifies the initial position
 float lastX = SCREEN_WIDTH / 2.0;
 float lastY = SCREEN_HEIGHT / 2.0;
 bool keys[1024];
 bool firstMouse = true;
 bool mouseClickActive = false;
-
 
 int main() {
 
@@ -56,7 +55,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     //  GLFW: Window creation
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "PBM", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Particles", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW Window" << std::endl;
         glfwTerminate();
@@ -79,6 +78,20 @@ int main() {
     //  Enable depth testing
     glEnable(GL_DEPTH_TEST);
 
+    //  Environment properties
+    glm::vec3 gravity(0.0f, -9.8f, 0.0f);
+
+    //  Particle properties
+    int pCount = 50000;
+    glm::vec3 position(0.0f, 0.0f, 0.0f);
+    glm::vec3 velocity(5.0f, 0.0f, 0.0f);
+    float velocityVariance = 0.0f;
+    float life = 10.0f;
+    float lifeVariance = 0.0f;
+
+    //  Creating particle sim object
+    ParticleEmitter pSim(pCount,position,velocity,velocityVariance,life,lifeVariance);
+
     while (!glfwWindowShouldClose(window)) {
 
         //  per-frame time logic
@@ -95,6 +108,10 @@ int main() {
         //  projection and view matrix Set
         glm::mat4 projection = glm::perspective(camera.Zoom, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
+
+        //  Simulation takes place here
+        pSim.AddForce(gravity);
+        pSim.PrintDetails();
 
         //  Swap buffers and poll IO events
         glfwSwapBuffers(window);
