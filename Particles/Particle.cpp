@@ -4,7 +4,7 @@
 
 #include "Particle.h"
 
-Particle::Particle() : m_position(glm::vec3(0.0, 0.0, 0.0)), m_velocity(glm::vec3(0.0,0.0,0.0)), m_mass(1.0), m_life(100.0), m_alive(true)
+Particle::Particle()
 {
 }
 
