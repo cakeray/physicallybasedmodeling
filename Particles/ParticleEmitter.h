@@ -3,12 +3,15 @@
 #define PARTICLE_EMITTER_H
 
 #include "Particle.h"
+#include <vector>
 
 class ParticleEmitter
 {
 public:
     ParticleEmitter(int maxCount, glm::vec3 pos, glm::vec3 vel, float velVariance, float life, float lifeVariance);
     ~ParticleEmitter();
+    void AddForce(const glm::vec3& gravity);
+    void PrintDetails();
 
 private:
     //  member variables
@@ -23,7 +26,8 @@ private:
     Particle* m_particles;
 
     //  member functions
-    void initialize();
+    void Initialize();
+    void RestartDead(int i);
 };
 
 #endif // !PARTICLE_EMITTER_H
